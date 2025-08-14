@@ -1,5 +1,5 @@
 //
-//  FrogAI.swift
+//  TurtlAI.swift
 //  Turtl
 //
 //  Created by Charvi Bansal on 7/31/25.
@@ -7,7 +7,7 @@
 import Foundation
 
 class TurtlAI {
-    static let shared = FrogAI()
+    static let shared = TurtlAI()
     
     let apiKey = openAIKey
     
