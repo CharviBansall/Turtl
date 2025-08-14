@@ -22,26 +22,24 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 button.image = tortoiseImage
                 button.image?.isTemplate = true // adapts to light/dark mode
             }
-            button.action = #selector(showPopover)
-            button.toolTip = "Turtl - Eat your turtles!"
+            button.action = #selector(togglePopover)
+            button.toolTip = "Turtl - Click to open task manager"
         }
         
-        // Set up right-click context menu
+        // Set up right-click context menu for additional options
         setupContextMenu()
         
         // Prevent the app from showing in the dock
         NSApp.setActivationPolicy(.accessory)
+        
+        // Automatically open the popover when app launches
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            self.togglePopover()
+        }
     }
     
     func setupContextMenu() {
         let menu = NSMenu()
-        
-        // Add task option
-        let addTaskItem = NSMenuItem(title: "Add New Task", action: #selector(showPopover), keyEquivalent: "n")
-        addTaskItem.target = self
-        menu.addItem(addTaskItem)
-        
-        menu.addItem(NSMenuItem.separator())
         
         // Quit option
         let quitItem = NSMenuItem(title: "Quit Turtl", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
@@ -51,7 +49,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         statusItem.menu = menu
     }
 
-    @objc func showPopover() {
+    @objc func togglePopover() {
         if popover.isShown {
             popover.performClose(nil)
         } else {
