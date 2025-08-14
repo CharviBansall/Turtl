@@ -306,10 +306,8 @@ struct ContentView: View {
                 // Refocus on input for quick task entry
                 isTaskInputFocused = true
                 
-                if let suggestion = suggestion {
-                    alertMessage = "Task added! AI suggests: \(suggestion)"
-                    showingAlert = true
-                }
+                alertMessage = "Task added successfully!"
+                showingAlert = true
             }
         }
     }
@@ -352,7 +350,7 @@ struct ContentView: View {
         // Create event
         let event = EKEvent(eventStore: self.eventStore)
         event.title = "🐢 \(task.title)"
-        event.notes = "Priority: \(task.priority.rawValue)\nAI Suggestion: \(task.aiSuggestion ?? "No suggestion available")"
+        event.notes = "Priority: \(task.priority.rawValue)"
         
         // Set event time based on AI suggestion or default to morning
         let calendar = Calendar.current
@@ -532,16 +530,7 @@ struct TaskRow: View {
                         .strikethrough(task.isCompleted)
                         .foregroundColor(task.isCompleted ? .gray : .primary)
                     
-                    if let suggestion = task.aiSuggestion {
-                        HStack(spacing: 4) {
-                            Image(systemName: "brain.head.profile")
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                            Text(suggestion)
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                        }
-                    }
+
                 }
                 
                 Spacer()
