@@ -28,25 +28,25 @@ class TurtlAI {
         // Common time patterns
         let timePatterns = [
             // Specific times
-            (r"(\d{1,2}):?(\d{2})?\s*(am|pm)", "specific_time"),
-            (r"(\d{1,2})\s*(am|pm)", "specific_time"),
-            (r"(\d{1,2})\s*(o'clock|oclock)", "specific_time"),
+            ("(\\d{1,2}):?(\\d{2})?\\s*(am|pm)", "specific_time"),
+            ("(\\d{1,2})\\s*(am|pm)", "specific_time"),
+            ("(\\d{1,2})\\s*(o'clock|oclock)", "specific_time"),
             
             // Time ranges
-            (r"(\d{1,2}):?(\d{2})?\s*-\s*(\d{1,2}):?(\d{2})?\s*(am|pm)", "time_range"),
+            ("(\\d{1,2}):?(\\d{2})?\\s*-\\s*(\\d{1,2}):?(\\d{2})?\\s*(am|pm)", "time_range"),
             
             // Relative times
-            (r"at\s+(\d{1,2}):?(\d{2})?\s*(am|pm)", "at_time"),
-            (r"by\s+(\d{1,2}):?(\d{2})?\s*(am|pm)", "by_time"),
-            (r"around\s+(\d{1,2}):?(\d{2})?\s*(am|pm)", "around_time"),
+            ("at\\s+(\\d{1,2}):?(\\d{2})?\\s*(am|pm)", "at_time"),
+            ("by\\s+(\\d{1,2}):?(\\d{2})?\\s*(am|pm)", "by_time"),
+            ("around\\s+(\\d{1,2}):?(\\d{2})?\\s*(am|pm)", "around_time"),
             
             // Time of day
-            (r"in\s+the\s+(morning|afternoon|evening|night)", "time_of_day"),
-            (r"(morning|afternoon|evening|night)", "time_of_day"),
+            ("in\\s+the\\s+(morning|afternoon|evening|night)", "time_of_day"),
+            ("(morning|afternoon|evening|night)", "time_of_day"),
             
             // Specific hours
-            (r"(\d{1,2})\s*pm", "pm_time"),
-            (r"(\d{1,2})\s*am", "am_time")
+            ("(\\d{1,2})\\s*pm", "pm_time"),
+            ("(\\d{1,2})\\s*am", "am_time")
         ]
         
         for (pattern, type) in timePatterns {

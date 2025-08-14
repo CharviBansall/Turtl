@@ -428,9 +428,9 @@ struct ContentView: View {
         
         // Parse specific times like "5pm", "5:30pm", "5 o'clock"
         let patterns = [
-            (r"(\d{1,2}):?(\d{2})?\s*(am|pm)", "specific_time"),
-            (r"(\d{1,2})\s*(am|pm)", "specific_time"),
-            (r"(\d{1,2})\s*(o'clock|oclock)", "specific_time")
+            ("(\\d{1,2}):?(\\d{2})?\\s*(am|pm)", "specific_time"),
+            ("(\\d{1,2})\\s*(am|pm)", "specific_time"),
+            ("(\\d{1,2})\\s*(o'clock|oclock)", "specific_time")
         ]
         
         for (pattern, _) in patterns {
