@@ -6,7 +6,7 @@
 //
 import Foundation
 
-class FrogAI {
+class TurtlAI {
     static let shared = FrogAI()
     
     let apiKey = openAIKey

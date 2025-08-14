@@ -31,7 +31,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         if popover.isShown {
             popover.performClose(nil)
         } else {
-            let popoverView = NSHostingController(rootView: FrogPopoverView())
+            let popoverView = NSHostingController(rootView: TurtlPopoverView())
             popover.contentSize = NSSize(width: 320, height: 400)
             popover.contentViewController = popoverView
             popover.behavior = .transient

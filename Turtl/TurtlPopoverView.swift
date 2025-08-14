@@ -6,7 +6,7 @@
 //
 import SwiftUI
 
-struct FrogPopoverView: View {
+struct TurtlPopoverView: View {
     
     
     var body: some View {

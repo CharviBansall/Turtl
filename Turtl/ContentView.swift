@@ -290,7 +290,7 @@ struct ContentView: View {
         )
         
         // Get AI suggestion for the best time
-        FrogAI.shared.suggestTime(for: newTaskTitle, priority: selectedPriority, deadline: deadline) { suggestion in
+        TurtlAI.shared.suggestTime(for: newTaskTitle, priority: selectedPriority, deadline: deadline) { suggestion in
             DispatchQueue.main.async {
                 var taskWithSuggestion = newTask
                 taskWithSuggestion.aiSuggestion = suggestion
