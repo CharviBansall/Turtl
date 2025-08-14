@@ -12,6 +12,76 @@ class TurtlAI {
     let apiKey = openAIKey
     
     func suggestTime(for task: String, priority: Task.Priority = .medium, deadline: Date = Date(), completion: @escaping (String?) -> Void) {
+        // First, try to extract explicit time from the task description
+        if let extractedTime = extractTimeFromTask(task) {
+            completion(extractedTime)
+            return
+        }
+        
+        // If no explicit time found, use AI to suggest optimal time
+        suggestOptimalTime(for: task, priority: priority, deadline: deadline, completion: completion)
+    }
+    
+    private func extractTimeFromTask(_ task: String) -> String? {
+        let lowercasedTask = task.lowercased()
+        
+        // Common time patterns
+        let timePatterns = [
+            // Specific times
+            (r"(\d{1,2}):?(\d{2})?\s*(am|pm)", "specific_time"),
+            (r"(\d{1,2})\s*(am|pm)", "specific_time"),
+            (r"(\d{1,2})\s*(o'clock|oclock)", "specific_time"),
+            
+            // Time ranges
+            (r"(\d{1,2}):?(\d{2})?\s*-\s*(\d{1,2}):?(\d{2})?\s*(am|pm)", "time_range"),
+            
+            // Relative times
+            (r"at\s+(\d{1,2}):?(\d{2})?\s*(am|pm)", "at_time"),
+            (r"by\s+(\d{1,2}):?(\d{2})?\s*(am|pm)", "by_time"),
+            (r"around\s+(\d{1,2}):?(\d{2})?\s*(am|pm)", "around_time"),
+            
+            // Time of day
+            (r"in\s+the\s+(morning|afternoon|evening|night)", "time_of_day"),
+            (r"(morning|afternoon|evening|night)", "time_of_day"),
+            
+            // Specific hours
+            (r"(\d{1,2})\s*pm", "pm_time"),
+            (r"(\d{1,2})\s*am", "am_time")
+        ]
+        
+        for (pattern, type) in timePatterns {
+            if let regex = try? NSRegularExpression(pattern: pattern, options: [.caseInsensitive]) {
+                let range = NSRange(lowercasedTask.startIndex..<lowercasedTask.endIndex, in: lowercasedTask)
+                if let match = regex.firstMatch(in: lowercasedTask, options: [], range: range) {
+                    let extractedText = String(lowercasedTask[Range(match.range, in: lowercasedTask)!])
+                    return formatExtractedTime(extractedText, type: type)
+                }
+            }
+        }
+        
+        return nil
+    }
+    
+    private func formatExtractedTime(_ timeText: String, type: String) -> String {
+        let cleaned = timeText.trimmingCharacters(in: .whitespaces)
+        
+        switch type {
+        case "specific_time", "at_time", "by_time", "around_time":
+            return "Explicit time: \(cleaned)"
+        case "time_range":
+            return "Time range: \(cleaned)"
+        case "time_of_day":
+            return "Time of day: \(cleaned)"
+        case "pm_time":
+            return "Afternoon/Evening: \(cleaned)"
+        case "am_time":
+            return "Morning: \(cleaned)"
+        default:
+            return "Time: \(cleaned)"
+        }
+    }
+    
+    private func suggestOptimalTime(for task: String, priority: Task.Priority, deadline: Date, completion: @escaping (String?) -> Void) {
         let url = URL(string: "https://openrouter.ai/api/v1/chat/completions")!
         
         let dateFormatter = DateFormatter()
@@ -29,6 +99,7 @@ class TurtlAI {
         - Administrative tasks can be done in the afternoon
         - Physical tasks might be better in the morning or early afternoon
         - Tasks requiring focus should avoid typical break times
+        - Meetings and social tasks should consider typical business hours
         
         Respond with a concise suggestion like:
         - "Morning (9-11 AM) - Best for creative work and high priority tasks"

@@ -360,26 +360,34 @@ struct ContentView: View {
         
         // Try to parse AI suggestion for time
         if let suggestion = task.aiSuggestion?.lowercased() {
-            // Parse time suggestions
-            if suggestion.contains("morning") || suggestion.contains("9") || suggestion.contains("10") {
-                eventDate = calendar.date(bySettingHour: 9, minute: 0, second: 0, of: task.deadline) ?? task.deadline
-            } else if suggestion.contains("early morning") || suggestion.contains("7") || suggestion.contains("8") {
-                eventDate = calendar.date(bySettingHour: 8, minute: 0, second: 0, of: task.deadline) ?? task.deadline
-            } else if suggestion.contains("afternoon") || suggestion.contains("2") || suggestion.contains("3") || suggestion.contains("14") || suggestion.contains("15") {
-                eventDate = calendar.date(bySettingHour: 14, minute: 0, second: 0, of: task.deadline) ?? task.deadline
-            } else if suggestion.contains("evening") || suggestion.contains("6") || suggestion.contains("7") || suggestion.contains("18") || suggestion.contains("19") {
-                eventDate = calendar.date(bySettingHour: 18, minute: 0, second: 0, of: task.deadline) ?? task.deadline
-            } else if suggestion.contains("late") || suggestion.contains("4") || suggestion.contains("5") || suggestion.contains("16") || suggestion.contains("17") {
-                eventDate = calendar.date(bySettingHour: 16, minute: 0, second: 0, of: task.deadline) ?? task.deadline
+            // First check if it's an explicit time extraction
+            if suggestion.hasPrefix("explicit time:") || suggestion.hasPrefix("time:") {
+                // Extract the actual time from the suggestion
+                let timeString = suggestion.replacingOccurrences(of: "explicit time: ", with: "")
+                    .replacingOccurrences(of: "time: ", with: "")
+                    .trimmingCharacters(in: .whitespaces)
+                
+                if let extractedTime = parseExtractedTime(timeString, for: task.deadline) {
+                    eventDate = extractedTime
+                } else {
+                    // Fall back to moon icon preference
+                    eventDate = getDefaultTime(for: timePreference, on: task.deadline)
+                }
             } else {
-                // Default based on moon icon preference
-                switch timePreference {
-                case .high: // 🌕 Full moon - morning
+                // Parse AI time suggestions
+                if suggestion.contains("morning") || suggestion.contains("9") || suggestion.contains("10") {
                     eventDate = calendar.date(bySettingHour: 9, minute: 0, second: 0, of: task.deadline) ?? task.deadline
-                case .medium: // 🌓 Half moon - afternoon
+                } else if suggestion.contains("early morning") || suggestion.contains("7") || suggestion.contains("8") {
+                    eventDate = calendar.date(bySettingHour: 8, minute: 0, second: 0, of: task.deadline) ?? task.deadline
+                } else if suggestion.contains("afternoon") || suggestion.contains("2") || suggestion.contains("3") || suggestion.contains("14") || suggestion.contains("15") {
                     eventDate = calendar.date(bySettingHour: 14, minute: 0, second: 0, of: task.deadline) ?? task.deadline
-                case .low: // 🌑 New moon - night
-                    eventDate = calendar.date(bySettingHour: 20, minute: 0, second: 0, of: task.deadline) ?? task.deadline
+                } else if suggestion.contains("evening") || suggestion.contains("6") || suggestion.contains("7") || suggestion.contains("18") || suggestion.contains("19") {
+                    eventDate = calendar.date(bySettingHour: 18, minute: 0, second: 0, of: task.deadline) ?? task.deadline
+                } else if suggestion.contains("late") || suggestion.contains("4") || suggestion.contains("5") || suggestion.contains("16") || suggestion.contains("17") {
+                    eventDate = calendar.date(bySettingHour: 16, minute: 0, second: 0, of: task.deadline) ?? task.deadline
+                } else {
+                    // Default based on moon icon preference
+                    eventDate = getDefaultTime(for: timePreference, on: task.deadline)
                 }
             }
         } else {
@@ -409,6 +417,75 @@ struct ContentView: View {
             print("✅ Task scheduled in calendar: \(task.title) at \(eventDate)")
         } catch {
             print("❌ Failed to save event: \(error.localizedDescription)")
+        }
+    }
+    
+    // MARK: - Time Parsing Helpers
+    
+    private func parseExtractedTime(_ timeString: String, for date: Date) -> Date? {
+        let calendar = Calendar.current
+        let lowercased = timeString.lowercased()
+        
+        // Parse specific times like "5pm", "5:30pm", "5 o'clock"
+        let patterns = [
+            (r"(\d{1,2}):?(\d{2})?\s*(am|pm)", "specific_time"),
+            (r"(\d{1,2})\s*(am|pm)", "specific_time"),
+            (r"(\d{1,2})\s*(o'clock|oclock)", "specific_time")
+        ]
+        
+        for (pattern, _) in patterns {
+            if let regex = try? NSRegularExpression(pattern: pattern, options: [.caseInsensitive]) {
+                let range = NSRange(lowercased.startIndex..<lowercased.endIndex, in: lowercased)
+                if let match = regex.firstMatch(in: lowercased, options: [], range: range) {
+                    let nsString = lowercased as NSString
+                    
+                    if let hourRange = Range(match.range(at: 1), in: lowercased),
+                       let ampmRange = Range(match.range(at: match.numberOfRanges - 1), in: lowercased) {
+                        
+                        let hourString = String(lowercased[hourRange])
+                        let ampmString = String(lowercased[ampmRange])
+                        
+                        if let hour = Int(hourString) {
+                            var adjustedHour = hour
+                            
+                            // Convert to 24-hour format
+                            if ampmString.lowercased() == "pm" && hour != 12 {
+                                adjustedHour += 12
+                            } else if ampmString.lowercased() == "am" && hour == 12 {
+                                adjustedHour = 0
+                            }
+                            
+                            // Set minutes (default to 0 if not specified)
+                            var minute = 0
+                            if match.numberOfRanges > 2 {
+                                if let minuteRange = Range(match.range(at: 2), in: lowercased) {
+                                    let minuteString = String(lowercased[minuteRange])
+                                    if !minuteString.isEmpty {
+                                        minute = Int(minuteString) ?? 0
+                                    }
+                                }
+                            }
+                            
+                            return calendar.date(bySettingHour: adjustedHour, minute: minute, second: 0, of: date)
+                        }
+                    }
+                }
+            }
+        }
+        
+        return nil
+    }
+    
+    private func getDefaultTime(for timePreference: Task.Priority, on date: Date) -> Date {
+        let calendar = Calendar.current
+        
+        switch timePreference {
+        case .high: // 🌕 Full moon - morning
+            return calendar.date(bySettingHour: 9, minute: 0, second: 0, of: date) ?? date
+        case .medium: // 🌓 Half moon - afternoon
+            return calendar.date(bySettingHour: 14, minute: 0, second: 0, of: date) ?? date
+        case .low: // 🌑 New moon - night
+            return calendar.date(bySettingHour: 20, minute: 0, second: 0, of: date) ?? date
         }
     }
     
