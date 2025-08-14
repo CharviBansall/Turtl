@@ -24,10 +24,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             }
             button.action = #selector(togglePopover)
             button.toolTip = "Turtl - Click to open task manager"
+            
+            // Remove any context menu to ensure left-click always works
+            button.sendAction(on: [.leftMouseUp])
         }
-        
-        // Set up right-click context menu for additional options
-        setupContextMenu()
         
         // Prevent the app from showing in the dock
         NSApp.setActivationPolicy(.accessory)
@@ -36,17 +36,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
             self.togglePopover()
         }
-    }
-    
-    func setupContextMenu() {
-        let menu = NSMenu()
-        
-        // Quit option
-        let quitItem = NSMenuItem(title: "Quit Turtl", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
-        quitItem.target = NSApp
-        menu.addItem(quitItem)
-        
-        statusItem.menu = menu
     }
 
     @objc func togglePopover() {
