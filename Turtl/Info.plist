@@ -15,5 +15,7 @@
 	</dict>
 	<key>NSCalendarsUsageDescription</key>
 	<string>Turtl needs access to your calendar to schedule tasks and meetings.</string>
+	<key>LSApplicationCategoryType</key>
+	<string>public.app-category.productivity</string>
 </dict>
 </plist>
