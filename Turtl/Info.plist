@@ -4,8 +4,6 @@
 <dict>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
-	<key>LSBackgroundOnly</key>
-	<true/>
 	<key>LSUIElement</key>
 	<true/>
 	<key>NSAppTransportSecurity</key>
@@ -15,7 +13,9 @@
 	</dict>
 	<key>NSCalendarsUsageDescription</key>
 	<string>Turtl needs access to your calendar to schedule tasks and meetings.</string>
-	<key>LSApplicationCategoryType</key>
-	<string>public.app-category.productivity</string>
+    
+    <key>LSApplicationCategoryType</key>
+        <string>public.app-category.productivity</string>
+        
 </dict>
 </plist>

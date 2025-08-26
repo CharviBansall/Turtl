@@ -139,6 +139,19 @@ struct ContentView: View {
                     .font(.headline)
                     .fontWeight(.bold)
                 Spacer()
+                
+                // Quit button (red cross)
+                Button(action: {
+                    NSApplication.shared.terminate(nil)
+                }) {
+                    Image(systemName: "xmark.circle.fill")
+                        .foregroundColor(.red)
+                        .font(.title2)
+                }
+                .buttonStyle(PlainButtonStyle())
+                .help("Quit Turtl")
+                .modifier(CircleGlassEffectModifier())
+                .modifier(InteractiveModifier())
             }
             .padding(.horizontal, 12)
             .padding(.vertical, 8)
