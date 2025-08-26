@@ -4,8 +4,6 @@
 <dict>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
-	<key>LSUIElement</key>
-	<true/>
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSAllowsArbitraryLoads</key>
