@@ -302,8 +302,8 @@ struct ContentView: View {
             deadline: deadline
         )
         
-        // Get AI suggestion for the best time
-        TurtlAI.shared.suggestTime(for: newTaskTitle, priority: selectedPriority, deadline: deadline) { suggestion in
+        // Get AI suggestion for the best time (use time preference, not task priority)
+        TurtlAI.shared.suggestTime(for: newTaskTitle, priority: selectedTimePreference, deadline: deadline) { suggestion in
             DispatchQueue.main.async {
                 var taskWithSuggestion = newTask
                 taskWithSuggestion.aiSuggestion = suggestion
@@ -392,7 +392,7 @@ struct ContentView: View {
                     eventDate = calendar.date(bySettingHour: 8, minute: 0, second: 0, of: task.deadline) ?? task.deadline
                 } else if suggestion.contains("afternoon") || suggestion.contains("2") || suggestion.contains("3") || suggestion.contains("14") || suggestion.contains("15") {
                     eventDate = calendar.date(bySettingHour: 14, minute: 0, second: 0, of: task.deadline) ?? task.deadline
-                } else if suggestion.contains("evening") || suggestion.contains("6") || suggestion.contains("7") || suggestion.contains("18") || suggestion.contains("19") {
+                } else if suggestion.contains("evening") || suggestion.contains("night") || suggestion.contains("6") || suggestion.contains("7") || suggestion.contains("18") || suggestion.contains("19") {
                     eventDate = calendar.date(bySettingHour: 18, minute: 0, second: 0, of: task.deadline) ?? task.deadline
                 } else if suggestion.contains("late") || suggestion.contains("4") || suggestion.contains("5") || suggestion.contains("16") || suggestion.contains("17") {
                     eventDate = calendar.date(bySettingHour: 16, minute: 0, second: 0, of: task.deadline) ?? task.deadline

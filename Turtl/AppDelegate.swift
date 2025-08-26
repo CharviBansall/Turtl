@@ -90,8 +90,24 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     func applicationWillTerminate(_ notification: Notification) {
         // Clean up when app is quitting
+        cleanup()
+    }
+
+    func applicationShouldTerminate(_ sender: NSApplication) -> NSApplication.TerminateReply {
+        // Ensure clean termination
+        cleanup()
+        return .terminateNow
+    }
+
+    private func cleanup() {
+        // Remove status item from menu bar
         if let statusItem = statusItem {
             NSStatusBar.system.removeStatusItem(statusItem)
+            self.statusItem = nil
+        }
+        // Close popover if open
+        if popover.isShown {
+            popover.performClose(nil)
         }
     }
 

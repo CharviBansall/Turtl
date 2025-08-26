@@ -91,31 +91,35 @@ class TurtlAI {
         let priorityString = priority.rawValue
         
         let systemPrompt = """
-        You are an AI assistant that helps users schedule their tasks optimally. Based on the task description, priority level, and deadline, suggest the best time of day to complete the task.
-        
+        You are an AI assistant that helps users schedule their tasks optimally. Based on the task description, preferred time of day, and deadline, suggest the best time to complete the task.
+
+        The priority parameter represents the user's preferred time of day:
+        - High = Morning (🌕 Full moon) - Best for creative work and focused tasks
+        - Medium = Afternoon (🌓 Half moon) - Good for administrative and routine tasks
+        - Low = Night (🌑 New moon) - Suitable for planning, review, or low-energy tasks
+
         Consider these factors:
-        - High priority tasks should be done earlier in the day
+        - Respect the user's preferred time of day when possible
         - Creative tasks work better in the morning when the mind is fresh
         - Administrative tasks can be done in the afternoon
-        - Physical tasks might be better in the morning or early afternoon
         - Tasks requiring focus should avoid typical break times
-        - Meetings and social tasks should consider typical business hours
-        
+        - Night is good for reflection, planning, and lighter cognitive work
+
         Respond with a concise suggestion like:
-        - "Morning (9-11 AM) - Best for creative work and high priority tasks"
+        - "Morning (9-11 AM) - Best for creative work and focused tasks"
         - "Afternoon (2-4 PM) - Good for administrative tasks"
         - "Evening (6-8 PM) - Suitable for planning and review tasks"
         - "Early morning (7-9 AM) - Ideal for important tasks requiring focus"
-        
+
         Keep your response under 100 characters and be specific about the time window.
         """
         
         let userPrompt = """
         Task: \(task)
-        Priority: \(priorityString)
+        Preferred Time: \(priorityString) (\(priority.timeDescription))
         Deadline: \(deadlineString)
-        
-        When is the best time to complete this task?
+
+        When is the best time to complete this task? Please consider the user's preferred time of day.
         """
         
         let messages: [[String: String]] = [
@@ -172,14 +176,14 @@ class TurtlAI {
         }.resume()
     }
     
-    private func getDefaultSuggestion(for priority: Task.Priority) -> String {
-        switch priority {
-        case .high:
-            return "Morning (9-11 AM) - Best for high priority tasks"
-        case .medium:
-            return "Afternoon (2-4 PM) - Good for medium priority tasks"
-        case .low:
-            return "Evening (6-8 PM) - Suitable for low priority tasks"
+    private func getDefaultSuggestion(for timePreference: Task.Priority) -> String {
+        switch timePreference {
+        case .high: // 🌕 Full moon - morning
+            return "Morning (9-11 AM) - Best for creative work and focused tasks"
+        case .medium: // 🌓 Half moon - afternoon
+            return "Afternoon (2-4 PM) - Good for administrative and routine tasks"
+        case .low: // 🌑 New moon - night
+            return "Evening (6-8 PM) - Suitable for planning and review tasks"
         }
     }
 }
