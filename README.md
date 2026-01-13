@@ -27,23 +27,6 @@ The AI considers several factors when suggesting the best time for your task:
 - **Deadline**: Urgent tasks are prioritized
 - **Time Patterns**: Avoids typical break times for focus-intensive tasks
 
-## Installation
-
-1. Clone this repository
-2. **Set up API Key**:
-   - Copy `FrogTime/Secrets.swift.template` to `FrogTime/Secrets.swift`
-   - Get your API key from [OpenRouter](https://openrouter.ai/)
-   - Replace `YOUR_OPENROUTER_API_KEY_HERE` with your actual API key
-3. Open `FrogTime.xcodeproj` in Xcode (project name remains the same for now)
-4. Build and run the project
-5. The app will appear in your menu bar as a turtle icon
-
-## Security
-
-- Never commit your `Secrets.swift` file to Git
-- The API key is stored locally and never shared
-- `Secrets.swift` is included in `.gitignore` for your protection
-
 ## Permissions
 
 Turtl requires the following permissions:
